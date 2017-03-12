@@ -50,7 +50,7 @@ int findIntersection(pdd c1, pdd c2, dl r1, dl r2, pdd &i1, pdd &i2) {
 
 bool onCircle(pdd c, dl r, pdd p) {
     dl dist = distance(c, p);
-    return dist == r;
+    return abs(dist-r) <= 0.01;
 }
 
 pdd findObstacle(vpdl sensors, vector<dl> obstacleDistances) {
@@ -64,7 +64,10 @@ pdd findObstacle(vpdl sensors, vector<dl> obstacleDistances) {
     if(onCircle(sensors[2], obstacleDistances[2], i1)) {
         return i1;
     }
-    return i2;
+    else if(onCircle(sensors[2], obstacleDistances[2], i2)){
+        return i2;
+    }
+    return make_pair(0, 0);
 }
 
 int main() {
@@ -74,13 +77,20 @@ int main() {
     fillCoordinates(sensors, n);
     
     vector<dl> obstacleDistances;
-    dl od[n] = {2.12132034356, 2.12132034356, 2.12132034356, 2.12132034356};
+    dl od[4] = {1, 3.16227766017, 3.60555127546, -1};
     
-    for(int i=0; i<n; i++) {
-        obstacleDistances.push_back(od[i]);
+    for(int i=0; i<4; i++) {
+        if(od[i] == -1) {
+            sensors.erase(sensors.begin()+i);
+        }
+        else {
+            obstacleDistances.push_back(od[i]);            
+        }
     }
     
     pdd obstacle = findObstacle(sensors, obstacleDistances);
+    
+    printf("%.3f %.3f", abs(obstacle.first), abs(obstacle.second));
     
     return 0;
 }
